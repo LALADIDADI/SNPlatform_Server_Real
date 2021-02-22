@@ -1,0 +1,21 @@
+﻿  HiSeekerRun.cpp
+G:\SNPalgorithm\HiSeeker\VSTest\HiSeekerRun\HiSeekerRun\HiSeekerRun.cpp(344,9): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“time_t”
+G:\SNPalgorithm\HiSeeker\VSTest\HiSeekerRun\HiSeekerRun\HiSeekerRun.cpp(344,9): message : 请考虑在格式字符串中使用“%lld”
+G:\SNPalgorithm\HiSeeker\VSTest\HiSeekerRun\HiSeekerRun\HiSeekerRun.cpp(344,9): message : 请考虑在格式字符串中使用“%I64d”
+G:\SNPalgorithm\HiSeeker\VSTest\HiSeekerRun\HiSeekerRun\HiSeekerRun.cpp(509,9): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“time_t”
+G:\SNPalgorithm\HiSeeker\VSTest\HiSeekerRun\HiSeekerRun\HiSeekerRun.cpp(509,9): message : 请考虑在格式字符串中使用“%lld”
+G:\SNPalgorithm\HiSeeker\VSTest\HiSeekerRun\HiSeekerRun\HiSeekerRun.cpp(509,9): message : 请考虑在格式字符串中使用“%I64d”
+G:\SNPalgorithm\HiSeeker\VSTest\HiSeekerRun\HiSeekerRun\HiSeekerRun.cpp(1258,17): warning C4018: “<”: 有符号/无符号不匹配
+G:\SNPalgorithm\HiSeeker\VSTest\HiSeekerRun\HiSeekerRun\HiSeekerRun.cpp(1597,16): warning C4018: “<”: 有符号/无符号不匹配
+G:\SNPalgorithm\HiSeeker\VSTest\HiSeekerRun\HiSeekerRun\HiSeekerRun.cpp(1885,29): warning C4018: “<”: 有符号/无符号不匹配
+G:\SNPalgorithm\HiSeeker\VSTest\HiSeekerRun\HiSeekerRun\HiSeekerRun.cpp(1886,20): warning C4018: “<”: 有符号/无符号不匹配
+G:\SNPalgorithm\HiSeeker\VSTest\HiSeekerRun\HiSeekerRun\HiSeekerRun.cpp(1687,10): warning C4101: “j2”: 未引用的局部变量
+G:\SNPalgorithm\HiSeeker\VSTest\HiSeekerRun\HiSeekerRun\HiSeekerRun.cpp(1687,6): warning C4101: “j1”: 未引用的局部变量
+G:\SNPalgorithm\HiSeeker\VSTest\HiSeekerRun\HiSeekerRun\HiSeekerRun.cpp(1757,11): warning C4101: “samp”: 未引用的局部变量
+G:\SNPalgorithm\HiSeeker\VSTest\HiSeekerRun\HiSeekerRun\HiSeekerRun.cpp(1757,17): warning C4101: “ld”: 未引用的局部变量
+G:\SNPalgorithm\HiSeeker\VSTest\HiSeekerRun\HiSeekerRun\HiSeekerRun.cpp(1708,13): warning C4101: “ed”: 未引用的局部变量
+G:\SNPalgorithm\HiSeeker\VSTest\HiSeekerRun\HiSeekerRun\HiSeekerRun.cpp(1687,14): warning C4101: “j3”: 未引用的局部变量
+G:\SNPalgorithm\HiSeeker\VSTest\HiSeekerRun\HiSeekerRun\HiSeekerRun.cpp(1757,21): warning C4101: “h”: 未引用的局部变量
+G:\SNPalgorithm\HiSeeker\VSTest\HiSeekerRun\HiSeekerRun\HiSeekerRun.cpp(1708,9): warning C4101: “st”: 未引用的局部变量
+G:\SNPalgorithm\HiSeeker\VSTest\HiSeekerRun\HiSeekerRun\HiSeekerRun.cpp(1687,18): warning C4101: “j4”: 未引用的局部变量
+  HiSeekerRun.vcxproj -> G:\SNPalgorithm\HiSeeker\VSTest\HiSeekerRun\Debug\HiSeekerRun.exe

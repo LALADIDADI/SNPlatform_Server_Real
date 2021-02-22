@@ -1,0 +1,4 @@
+﻿cl : 命令行 warning D9002: 忽略未知选项“/G”
+  GSL_DLL
+c1xx : fatal error C1083: 无法打开源文件: “GSL_DLL”: No such file or directory
+  gslTest.cpp
