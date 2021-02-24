@@ -1,0 +1,20 @@
+﻿  ClusterMIRun.cpp
+G:\SNPalgorithm\ClusterMI\ClusterMIRun\ClusterMIRun\ClusterMIRun.cpp(875,9): warning C4101: “max”: 未引用的局部变量
+G:\SNPalgorithm\ClusterMI\ClusterMIRun\ClusterMIRun\ClusterMIRun.cpp(874,7): warning C4101: “filename”: 未引用的局部变量
+G:\SNPalgorithm\ClusterMI\ClusterMIRun\ClusterMIRun\ClusterMIRun.cpp(876,6): warning C4101: “max_k”: 未引用的局部变量
+G:\SNPalgorithm\ClusterMI\ClusterMIRun\ClusterMIRun\ClusterMIRun.cpp(959,6): warning C4101: “random_data”: 未引用的局部变量
+G:\SNPalgorithm\ClusterMI\ClusterMIRun\ClusterMIRun\ClusterMIRun.cpp(954,9): warning C4101: “j”: 未引用的局部变量
+G:\SNPalgorithm\ClusterMI\ClusterMIRun\ClusterMIRun\ClusterMIRun.cpp(1013,9): warning C4101: “p”: 未引用的局部变量
+G:\SNPalgorithm\ClusterMI\ClusterMIRun\ClusterMIRun\ClusterMIRun.cpp(1010,9): warning C4101: “j”: 未引用的局部变量
+G:\SNPalgorithm\ClusterMI\ClusterMIRun\ClusterMIRun\ClusterMIRun.cpp(1013,12): warning C4101: “pvalue”: 未引用的局部变量
+G:\SNPalgorithm\ClusterMI\ClusterMIRun\ClusterMIRun\ClusterMIRun.cpp(1156,17): warning C4018: “<”: 有符号/无符号不匹配
+G:\SNPalgorithm\ClusterMI\ClusterMIRun\ClusterMIRun\ClusterMIRun.cpp(1376,16): warning C4018: “<”: 有符号/无符号不匹配
+G:\SNPalgorithm\ClusterMI\ClusterMIRun\ClusterMIRun\ClusterMIRun.cpp(1616,27): warning C4018: “<”: 有符号/无符号不匹配
+G:\SNPalgorithm\ClusterMI\ClusterMIRun\ClusterMIRun\ClusterMIRun.cpp(1617,18): warning C4018: “<”: 有符号/无符号不匹配
+G:\SNPalgorithm\ClusterMI\ClusterMIRun\ClusterMIRun\ClusterMIRun.cpp(1484,6): warning C4101: “single_sig_count”: 未引用的局部变量
+  正在生成代码
+  1 of 446 functions ( 0.2%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    3 functions had inline decision re-evaluated but remain unchanged
+  已完成代码的生成
+  ClusterMIRun.vcxproj -> G:\SNPalgorithm\ClusterMI\ClusterMIRun\Release\ClusterMIRun.exe

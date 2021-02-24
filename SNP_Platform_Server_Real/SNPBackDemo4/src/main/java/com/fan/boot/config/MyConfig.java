@@ -1,6 +1,7 @@
 package com.fan.boot.config;
 
 
+import com.fan.boot.param.ClusterMIParam;
 import com.fan.boot.param.HiSeekerParam;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,10 +24,16 @@ import org.springframework.context.annotation.Configuration;
 @Configuration(proxyBeanMethods = true)
 public class MyConfig {
 
+    // HiSeeker算法
     @Bean
     public HiSeekerParam HiSeekerParam01() {
-        HiSeekerParam hsp =new HiSeekerParam();
-        return hsp;
+        return new HiSeekerParam();
+    }
+
+    // ClusterMI算法
+    @Bean
+    public ClusterMIParam ClusterParam01() {
+        return new ClusterMIParam();
     }
 
 }
