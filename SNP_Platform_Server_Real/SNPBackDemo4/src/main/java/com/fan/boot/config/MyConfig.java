@@ -2,6 +2,7 @@ package com.fan.boot.config;
 
 
 import com.fan.boot.param.ClusterMIParam;
+import com.fan.boot.param.DCHEParam;
 import com.fan.boot.param.HiSeekerParam;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,6 +35,12 @@ public class MyConfig {
     @Bean
     public ClusterMIParam ClusterParam01() {
         return new ClusterMIParam();
+    }
+
+    // DCHE算法
+    @Bean
+    public DCHEParam DCHEParam01() {
+        return new DCHEParam();
     }
 
 }

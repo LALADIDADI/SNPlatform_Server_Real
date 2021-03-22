@@ -21,7 +21,7 @@ public class CommonUtils {
     // 新建文件夹的两个方法，这个也放入工具类里面
 
     /**
-     * 传入请求号与文件名，自动建立文件夹并返回完整的文件路径
+     * 传入请求号与文件名，自动建立文件夹并返回完整的输入文件路径
      *
      * @param queryId       传入的请求号
      * @param inputDataName 传入的输入文件名称
@@ -38,6 +38,21 @@ public class CommonUtils {
         System.out.println("inputDataPath: " + inputDataPath);
 
         return inputDataPath;
+    }
+
+    /**
+     * 返回结果文件应该存入的路径的方法
+     *
+     * @param queryId 传入的请求号
+     * @param resDataName 传入的输入文件名称
+     * @return 完整的输入文件路径
+     *
+     */
+
+    public static String getResultDataPathAndName(String queryId, String resDataName){
+        String filePath2 = "D:/SNPPlatfromData/" + queryId + "/resultData";
+        String resDataPathAndName = filePath2 + "/" + resDataName;
+        return resDataPathAndName;
     }
     // 这个也放到工具类里面
 
