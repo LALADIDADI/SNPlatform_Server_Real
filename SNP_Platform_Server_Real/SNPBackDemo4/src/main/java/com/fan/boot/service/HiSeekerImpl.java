@@ -1,6 +1,7 @@
 package com.fan.boot.service;
 
 import com.fan.boot.param.HiSeekerParam;
+import com.fan.boot.utils.ReadFileListUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,7 +21,7 @@ public class HiSeekerImpl {
     }
 
     // 调用exe并传入参数，包括输入文件在哪里
-    public static void runHiSeekerExe(HiSeekerParam HiParams) throws IOException {
+    public static void runHiSeekerExe(HiSeekerParam HiParams, String fileName) throws IOException {
         System.out.println("我RUN啦");
 
         // 获取exe文件在程序中的位置
@@ -43,19 +44,38 @@ public class HiSeekerImpl {
         String topK = HiParams.getTopK();
         String typeOfSearch = HiParams.getTypeOfSearch();
 
-        String inputDataPath = HiParams.getInputDataPath();
+        String inputDataPath = HiParams.getInputDataPath_i()+fileName;
         String queryId = HiParams.getQueryId();
 
+        String dataName = fileName;
+
         String[] cmd = {AbsolutePath, threshold, scaleFactor, rou, phe, alpha, iAntCount, iterCount, kLociSet,
-                        kEpiModel, kTopModel, topK, typeOfSearch, inputDataPath, queryId};
+                        kEpiModel, kTopModel, topK, typeOfSearch, inputDataPath, queryId, dataName};
         openExe(cmd);
-        System.out.println(inputDataPath);
+        System.out.println("完整文件输入路径为：" + inputDataPath);
         System.out.println("我结束啦");
+    }
+
+    // 实现批量调用exe，并提供一个接口，包含文件路径，但不包含文件名
+    public static void batchRun(HiSeekerParam HiParams) throws IOException, InterruptedException {
+        String inputDataPath = HiParams.getInputDataPath_i();
+        String[] inputFiles = ReadFileListUtils.getFileName(inputDataPath);
+
+        for(int i = 0; i < inputFiles.length; i++){
+            runHiSeekerExe(HiParams, inputFiles[i]);
+            System.out.println("inputFiles["+ i +"]:"+inputFiles[i]);
+            Thread.sleep(1000);
+        }
     }
 
 
 
     public static void main(String[] args) throws IOException {
-
+        File directory = new File("");// 参数要为空
+        String AbsolutePath = directory.getCanonicalPath();
+        String exePath = "\\src\\main\\resources\\static\\HiSeekerExe\\HiSeekerRun.exe";
+        AbsolutePath = AbsolutePath + exePath;
+        String[] testCmd = {AbsolutePath, "0.05", "10000", "0.05", "100", "1", "500", "200", "2", "3", "800", "100", "0", "C:\\Users\\Administrator\\Desktop\\毕业设计\\代码\\testInputFile\\testdata_1.txt", "110000", "demo.txt"};
+        openExe(testCmd);
     }
 }

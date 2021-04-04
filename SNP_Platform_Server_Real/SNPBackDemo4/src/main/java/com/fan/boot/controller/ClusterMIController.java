@@ -2,6 +2,8 @@ package com.fan.boot.controller;
 
 import com.fan.boot.param.ClusterMIParam;
 import com.fan.boot.service.ClusterMIImpl;
+import com.fan.boot.service.HiSeekerImpl;
+import com.fan.boot.utils.CheckUtils;
 import com.fan.boot.utils.CommonUtils;
 import com.fan.boot.utils.FileDeleteUtils;
 import com.fan.boot.utils.ZipUtils;
@@ -35,6 +37,10 @@ public class ClusterMIController {
     @Autowired
     ClusterMIParam cmip;
 
+    // 全局变量
+    int inputFileCount = 0; // 一次性上传文件的数量
+    float temFileCount = 0; // 暂存的文件数量，只在计算百分比时被调用一次
+
 
     // ClusterMI参数上传方法
     @PostMapping("/ClusterMIParamsUpload")
@@ -44,7 +50,20 @@ public class ClusterMIController {
         cmip.setAllParams(params);
 
         // 调出相应的Service，传递参数，运行算法
-        ClusterMIImpl.runClusterMIExe(cmip);
+        // ClusterMIImpl.runClusterMIExe(cmip);
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("为运行算法开启一个新线程");
+                try {
+                    ClusterMIImpl.batchRun(cmip);
+                } catch (IOException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
 
 
         //返回参数以便测试是否上传成功
@@ -52,34 +71,49 @@ public class ClusterMIController {
         Map<String, Object> map = new HashMap<>();
         map.put("params", params);
         map.put("queryId", cmip.getQueryId());
+
+        // 重置inputFileCount
+        temFileCount = inputFileCount;
+        inputFileCount = 0;
+
         return map;
     }
 
     // ClusterMI文件上传方法
     @PostMapping("/ClusterMIInputDataUpload")
     public String getFile(@RequestPart("txtFile") MultipartFile dataFile) throws IOException {
-
         log.info("上传的信息：InputData={}", dataFile);
         System.out.println(dataFile.isEmpty());
 
         // 删除上一个请求的文件夹,如果是第一次，也没问题
-        String deletePath = "D:/SNPPlatfromData/" + cmip.getQueryId();
-        FileDeleteUtils.delete(deletePath);
+        if(inputFileCount == 0){
+            String deletePath = "D:/SNPPlatfromData/" + cmip.getQueryId();
+            FileDeleteUtils.delete(deletePath);
+        }
 
         if(!dataFile.isEmpty()){
             // 保存到本地文件服务器
             String originalFilename = dataFile.getOriginalFilename();
             System.out.println("originalFilename: "+originalFilename);
 
-            // 这里开始，ClusterMIParam单例对象介入
-            cmip.setQueryId(CommonUtils.createQueryId());
-            cmip.setInputDataName(originalFilename);
-            cmip.setInputDataPath(CommonUtils.createDirAndPath(cmip.getQueryId(), originalFilename));
-            String inputDataPath = cmip.getInputDataPath();
+            // 这里开始，HiSeekerparam单例对象介入
+            if(inputFileCount == 0){
+                cmip.setQueryId(CommonUtils.createQueryId());
+                cmip.setInputDataName(originalFilename);
+                cmip.setInputDataPath(CommonUtils.getInputPath(cmip.getQueryId(), originalFilename));// 得到完整路径
+                // 创建文件夹
+                CommonUtils.createDir(cmip.getQueryId());
+                // 不就是再新建一个属性嘛，新建不带文件名属性
+                cmip.setInputDataPath_i(CommonUtils.getInputPath_i(cmip.getQueryId()));
+            }
 
-            dataFile.transferTo(new File(inputDataPath));
+            String transferToPath = cmip.getInputDataPath_i() + originalFilename;
+
+            dataFile.transferTo(new File(transferToPath));
 
         }
+        inputFileCount++;
+        System.out.println("已经上传 " + inputFileCount + " 个文件啦！");
         return "我收到你的文件啦lalala！";
     }
 
@@ -98,16 +132,23 @@ public class ClusterMIController {
 
         // CommonUtils.haveDir(goalPath)判断算法是否完成
         String finished = "false";
-        if(CommonUtils.haveDir(finishedPath)) // 如果完成，打包成zip,并返回一个参数，解除下载按钮的禁用状态
-        {
-            ZipUtils.dirToZip(goalPath);
+        float fileCount = 0;
+        float percent = 0;
+        if(CheckUtils.isDir(finishedPath)){
+            fileCount = CheckUtils.getDirCount(finishedPath);
+            percent = CommonUtils.decFormatPer(fileCount, temFileCount);
+        }
+
+        if(fileCount == temFileCount){
             finished = "true";
+            ZipUtils.dirToZip(goalPath);
         }
 
         //返回参数以便测试是否上传成功
         Map<String, Object> map = new HashMap<>();
         map.put("params", params);
         map.put("finished", finished);
+        map.put("progress", percent);
         return map;
     }
 

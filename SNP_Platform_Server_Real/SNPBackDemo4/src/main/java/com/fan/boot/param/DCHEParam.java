@@ -19,10 +19,14 @@ public class DCHEParam {
     String queryId;
     String inputDataName;
     String inputDataPath;
-    String resDataPath;
+    String inputDataPath_i; // 没有文件名的文件路径
+    String resDataPath_i;
+
 
     // 判断算法是否完成相关参数
-    boolean finished = false;
+    int filesCount = 0;
+    int finishedCount = 0;
+    // boolean finished = false;
 
     public DCHEParam() {
     }
@@ -139,19 +143,35 @@ public class DCHEParam {
         this.sizeList = sizeList;
     }
 
-    public String getResDataPath() {
-        return resDataPath;
+    public String getResDataPath_i() {
+        return resDataPath_i;
     }
 
-    public void setResDataPath(String resDataPath) {
-        this.resDataPath = resDataPath;
+    public void setResDataPath_i(String resDataPath_i) {
+        this.resDataPath_i = resDataPath_i;
     }
 
-    public boolean isFinished() {
-        return finished;
+    public String getInputDataPath_i() {
+        return inputDataPath_i;
     }
 
-    public void setFinished(boolean finished) {
-        this.finished = finished;
+    public void setInputDataPath_i(String inputDataPath_i) {
+        this.inputDataPath_i = inputDataPath_i;
+    }
+
+    public int getFilesCount() {
+        return filesCount;
+    }
+
+    public void setFilesCount(int filesCount) {
+        this.filesCount = filesCount;
+    }
+
+    public int getFinishedCount() {
+        return finishedCount;
+    }
+
+    public void setFinishedCount(int finishedCount) {
+        this.finishedCount = finishedCount;
     }
 }

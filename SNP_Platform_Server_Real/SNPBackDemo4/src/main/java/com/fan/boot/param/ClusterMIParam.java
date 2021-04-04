@@ -22,6 +22,7 @@ public class ClusterMIParam {
     String queryId;
     String inputDataName;
     String inputDataPath;
+    String inputDataPath_i; // inputFile不带文件名版本，即青春版
 
     public ClusterMIParam() {
     }
@@ -163,5 +164,13 @@ public class ClusterMIParam {
 
     public void setkCluster(String kCluster) {
         this.kCluster = kCluster;
+    }
+
+    public String getInputDataPath_i() {
+        return inputDataPath_i;
+    }
+
+    public void setInputDataPath_i(String inputDataPath_i) {
+        this.inputDataPath_i = inputDataPath_i;
     }
 }

@@ -25,6 +25,7 @@ public class HiSeekerParam {
     String queryId;
     String inputDataName;
     String inputDataPath;
+    String inputDataPath_i; // inputFile不带文件名版本，即青春版
 
 
     public HiSeekerParam() {
@@ -183,5 +184,13 @@ public class HiSeekerParam {
 
     public void setInputDataPath(String inputDataPath) {
         this.inputDataPath = inputDataPath;
+    }
+
+    public String getInputDataPath_i() {
+        return inputDataPath_i;
+    }
+
+    public void setInputDataPath_i(String inputDataPath_i) {
+        this.inputDataPath_i = inputDataPath_i;
     }
 }

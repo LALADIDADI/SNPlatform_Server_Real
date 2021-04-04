@@ -1,6 +1,7 @@
 package com.fan.boot.utils;
 
 import java.io.File;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -39,20 +40,57 @@ public class CommonUtils {
 
         return inputDataPath;
     }
+    /**
+     * 单纯的返回完整路径的方法
+     * @param queryId
+     * @param inputDataName
+     *
+     * @return 完整的inputDataFile路径
+     */
+    public static String getInputPath(String queryId, String inputDataName) {
+        String filePath1 = "D:/SNPPlatfromData/" + queryId + "/inputData";
+        String inputDataPath = filePath1 + "/" + inputDataName;
+
+        return inputDataPath;
+    }
+
+    /**
+     * 单纯的建立文件夹的方法
+     * @param queryId
+     * @return void
+     */
+    public static void createDir(String queryId) {
+        String filePath1 = "D:/SNPPlatfromData/" + queryId + "/inputData";
+        String filePath2 = "D:/SNPPlatfromData/" + queryId + "/resultData";
+        mkdirs(filePath1);
+        mkdirs(filePath2);
+    }
+
+
+    /**
+     * 传入请求号与文件名，不建立文件夹并返回inputData文件夹路径
+     * @param queryId 传入的请求号
+     * @return 完整的输入文件inputData文件夹路径
+     */
+    public static String getInputPath_i(String queryId) {
+        String filePath1 = "D:/SNPPlatfromData/" + queryId + "/inputData/";
+
+        System.out.println("inputDataPath路径名（不包含文件名）" + filePath1);
+
+        return filePath1;
+    }
 
     /**
      * 返回结果文件应该存入的路径的方法
      *
      * @param queryId 传入的请求号
-     * @param resDataName 传入的输入文件名称
-     * @return 完整的输入文件路径
+     * @return 不完整的输入文件路径
      *
      */
 
-    public static String getResultDataPathAndName(String queryId, String resDataName){
-        String filePath2 = "D:/SNPPlatfromData/" + queryId + "/resultData";
-        String resDataPathAndName = filePath2 + "/" + resDataName;
-        return resDataPathAndName;
+    public static String getResultPath_i(String queryId){
+        String filePath = "D:/SNPPlatfromData/" + queryId + "/resultData/";
+        return filePath;
     }
     // 这个也放到工具类里面
 
@@ -112,9 +150,24 @@ public class CommonUtils {
             return false;
         }
     }
+    /**
+     * 除法运算，保留两位小数，并乘以100，返回String
+     * @param a 被除数
+     * @param b 除数
+     * @return 商
+     */
+    public static float decFormatPer(float a,float b) {
+        // TODO 自动生成的方法存根
+
+        DecimalFormat df=new DecimalFormat("0.0");//设置保留位数
+        String percentage = df.format((a/b)*100);
+        float res = Float.parseFloat(percentage);
+        return res;
+
+    }
 
 
     public static void main(String[] args) {
-
+        System.out.println(decFormatPer(1,3));
     }
 }

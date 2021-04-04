@@ -3,12 +3,12 @@ package com.fan.boot.controller;
 
 import com.fan.boot.param.HiSeekerParam;
 import com.fan.boot.service.HiSeekerImpl;
+import com.fan.boot.utils.CheckUtils;
 import com.fan.boot.utils.CommonUtils;
 import com.fan.boot.utils.FileDeleteUtils;
 import com.fan.boot.utils.ZipUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -20,12 +20,6 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -40,6 +34,10 @@ public class HiSeekerController {
     @Autowired
     HiSeekerParam   hsp;
 
+    // 不得已而用的全局变量
+    int inputFileCount = 0; // 一次性上传文件的数量
+    float temFileCount = 0; // 暂存的文件数量，只在计算百分比时被调用一次,因为是计算百分比，除法运算，使用float
+
 
     // HiSeeker参数上传方法
     @PostMapping("/HiSeekerParamsUpload")
@@ -49,14 +47,31 @@ public class HiSeekerController {
         hsp.setAllParams(params);
 
         // 调出相应的Service，传递参数，运行算法
-        HiSeekerImpl.runHiSeekerExe(hsp);
-
+        // HiSeekerImpl.runHiSeekerExe(hsp);
+        // 因为需要执行的时间超过5秒，所以出现了uncaught错误
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("为运行算法开启一个新线程");
+                try {
+                    HiSeekerImpl.batchRun(hsp);
+                } catch (IOException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
 
         //返回参数以便测试是否上传成功
         log.info("上传的参数：params={}", params);
         Map<String, Object> map = new HashMap<>();
         map.put("params", params);
         map.put("queryId", hsp.getQueryId());
+
+        // 重置inputFileCount
+        temFileCount = inputFileCount;
+        inputFileCount = 0;
+
         return map;
     }
 
@@ -68,8 +83,10 @@ public class HiSeekerController {
         System.out.println(dataFile.isEmpty());
 
         // 删除上一个请求的文件夹,如果是第一次，也没问题
-        String deletePath = "D:/SNPPlatfromData/" + hsp.getQueryId();
-        FileDeleteUtils.delete(deletePath);
+        if(inputFileCount == 0){
+            String deletePath = "D:/SNPPlatfromData/" + hsp.getQueryId();
+            FileDeleteUtils.delete(deletePath);
+        }
 
         if(!dataFile.isEmpty()){
             // 保存到本地文件服务器
@@ -77,14 +94,23 @@ public class HiSeekerController {
             System.out.println("originalFilename: "+originalFilename);
 
             // 这里开始，HiSeekerparam单例对象介入
-            hsp.setQueryId(CommonUtils.createQueryId());
-            hsp.setInputDataName(originalFilename);
-            hsp.setInputDataPath(CommonUtils.createDirAndPath(hsp.getQueryId(), originalFilename));
-            String inputDataPath = hsp.getInputDataPath();
+            if(inputFileCount == 0){
+                hsp.setQueryId(CommonUtils.createQueryId());
+                hsp.setInputDataName(originalFilename);
+                hsp.setInputDataPath(CommonUtils.getInputPath(hsp.getQueryId(), originalFilename));// 得到完整路径,批处理用不到
+                // 创建文件夹
+                CommonUtils.createDir(hsp.getQueryId());
+                // 不就是再新建一个属性嘛，新建不带文件名属性
+                hsp.setInputDataPath_i(CommonUtils.getInputPath_i(hsp.getQueryId())); // 批处理需要用的不完整路径
+            }
 
-            dataFile.transferTo(new File(inputDataPath));
+            String transferToPath = hsp.getInputDataPath_i() + originalFilename;
+
+            dataFile.transferTo(new File(transferToPath));
 
         }
+        inputFileCount++;
+        System.out.println("已经上传 " + inputFileCount + " 个文件啦！");
         return "我收到你的文件啦lalala！";
     }
 
@@ -103,16 +129,23 @@ public class HiSeekerController {
 
         // CommonUtils.haveDir(goalPath)判断算法是否完成
         String finished = "false";
-        if(CommonUtils.haveDir(finishedPath)) // 如果完成，打包成zip,并返回一个参数，解除下载按钮的禁用状态
-        {
-            ZipUtils.dirToZip(goalPath);
+        float fileCount = 0;
+        float percent = 0;
+        if(CheckUtils.isDir(finishedPath)){
+            fileCount = CheckUtils.getDirCount(finishedPath);
+            percent = CommonUtils.decFormatPer(fileCount, temFileCount);
+        }
+
+        if(fileCount == temFileCount){
             finished = "true";
+            ZipUtils.dirToZip(goalPath);
         }
 
         //返回参数以便测试是否上传成功
         Map<String, Object> map = new HashMap<>();
         map.put("params", params);
         map.put("finished", finished);
+        map.put("progress", percent);
         return map;
     }
 

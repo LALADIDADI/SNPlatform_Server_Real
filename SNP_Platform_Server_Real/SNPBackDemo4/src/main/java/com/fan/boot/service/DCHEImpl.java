@@ -2,6 +2,8 @@ package com.fan.boot.service;
 
 import com.fan.boot.modules.mtif.Exhaustion;
 import com.fan.boot.param.DCHEParam;
+import com.fan.boot.utils.CalParamsUtils;
+import com.fan.boot.utils.ReadFileListUtils;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -11,12 +13,16 @@ import java.io.IOException;
 public class DCHEImpl {
 
     // 传入DCHEParam对象，执行算法
-    public static void runDCHE(DCHEParam dcheParam){
-        String inputDataPath = dcheParam.getInputDataPath();
-        String resDataPath = dcheParam.getResDataPath();
-        int nSample = dcheParam.getNoSamples();
-        int nCases = dcheParam.getNoCases();
-        int nSNPs = dcheParam.getNoSNPs();
+    public static void runDCHE(DCHEParam dcheParam, String fileName){
+        // String inputDataPath = dcheParam.getInputDataPath();
+        String inputDataPath = dcheParam.getInputDataPath_i() + fileName;
+        String resDataPath = dcheParam.getResDataPath_i()+"resData_"+fileName;
+        // 这里需要对每个算法进行计算
+        CalParamsUtils.calParams(inputDataPath);
+        int nSample = CalParamsUtils.getNumCase() + CalParamsUtils.getNumControl();
+        int nCases = CalParamsUtils.getNumCase();
+        int nSNPs = CalParamsUtils.getNumSnp();
+
         int order = dcheParam.getOrder();
         double[] alpha0 = dcheParam.getAlpha0();
         int[] sizeList = dcheParam.getSizeList();
@@ -63,7 +69,26 @@ public class DCHEImpl {
             objE.writeResults(resDataPath, 2);
         }
 
-        dcheParam.setFinished(true);
+        dcheParam.setFinishedCount(dcheParam.getFinishedCount() + 1);
         System.out.println("DCHE Over");
+    }
+
+    public static void batchRun(DCHEParam dcheParam) {
+        String inputDataPath = dcheParam.getInputDataPath_i();
+        String[] inputFiles = ReadFileListUtils.getFileName(inputDataPath);
+
+        for(int i = 0; i < inputFiles.length; i++){
+            runDCHE(dcheParam, inputFiles[i]);
+            System.out.println("inputFiles["+ i +"]:"+inputFiles[i]);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+
     }
 }

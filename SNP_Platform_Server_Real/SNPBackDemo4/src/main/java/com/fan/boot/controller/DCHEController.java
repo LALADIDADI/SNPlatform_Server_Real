@@ -2,10 +2,7 @@ package com.fan.boot.controller;
 
 import com.fan.boot.param.DCHEParam;
 import com.fan.boot.service.DCHEImpl;
-import com.fan.boot.utils.CalParamsUtils;
-import com.fan.boot.utils.CommonUtils;
-import com.fan.boot.utils.FileDeleteUtils;
-import com.fan.boot.utils.ZipUtils;
+import com.fan.boot.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -26,6 +23,8 @@ public class DCHEController {
     @Autowired
     DCHEParam dchep;
 
+    // 文件批量上传而使用的全局变量
+    int inputFileCount = 0; // 一次性上传文件的数量
 
     // DCHE参数上传方法
     @PostMapping("/DCHEParamsUpload")
@@ -34,22 +33,33 @@ public class DCHEController {
         // 将参数保存到算法参数对象中
         dchep.setRemainParams(params);
 
+        // 这里并没有处理完成所有参数，因为是批处理，所以计算SNP之类延迟到算法真正调用时
+
+
         // 调出相应的Service，传递参数，运行算法
         // 因为需要执行的时间超过5秒，所以出现了uncaught错误
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 System.out.println("为运行算法开启一个新线程");
-                DCHEImpl.runDCHE(dchep);
+                // DCHEImpl.runDCHE(dchep);
+                DCHEImpl.batchRun(dchep);
             }
         });
         thread.start();
+
         System.out.println("我跳过了算法运行，直接执行");
         //返回参数以便测试是否上传成功
         log.info("上传的参数：params={}", params);
         Map<String, Object> map = new HashMap<>();
         map.put("params", params);
         map.put("queryId", dchep.getQueryId());
+
+        // 重置inputFileCount,finishedFileCount
+        dchep.setFinishedCount(0);
+        dchep.setFilesCount(inputFileCount);
+        inputFileCount = 0;
+
         return map;
     }
 
@@ -61,55 +71,69 @@ public class DCHEController {
         System.out.println(dataFile.isEmpty());
 
         // 删除上一个请求的文件夹,如果是第一次，也没问题
-        String deletePath = "D:/SNPPlatfromData/" + dchep.getQueryId();
-        FileDeleteUtils.delete(deletePath);
+        if(inputFileCount == 0){
+            String deletePath = "D:/SNPPlatfromData/" + dchep.getQueryId();
+            FileDeleteUtils.delete(deletePath);
+        }
 
         if(!dataFile.isEmpty()){
             // 保存到本地文件服务器
             String originalFilename = dataFile.getOriginalFilename();
             System.out.println("originalFilename: "+originalFilename);
 
-            // 这里开始，DCHEParam单例对象介入
-            dchep.setQueryId(CommonUtils.createQueryId());
-            dchep.setInputDataName(originalFilename);
-            dchep.setInputDataPath(CommonUtils.createDirAndPath(dchep.getQueryId(), originalFilename));
-            dchep.setResDataPath(CommonUtils.getResultDataPathAndName(dchep.getQueryId(), "resultData.txt"));
-            String inputDataPath = dchep.getInputDataPath();
+            // 这里开始，HiSeekerparam单例对象介入
+            if(inputFileCount == 0){
+                dchep.setQueryId(CommonUtils.createQueryId());
+                dchep.setInputDataName(originalFilename);
+                dchep.setInputDataPath(CommonUtils.getInputPath(dchep.getQueryId(), originalFilename));// 得到完整路径，批处理用不到
+                // 创建文件夹
+                CommonUtils.createDir(dchep.getQueryId());
+                // 不就是再新建一个属性嘛，新建不带文件名属性
+                dchep.setInputDataPath_i(CommonUtils.getInputPath_i(dchep.getQueryId())); // 批处理需要用到的路径
+                dchep.setResDataPath_i(CommonUtils.getResultPath_i(dchep.getQueryId())); // 批处理需要用到的返回文件不完整路径
+            }
 
-            // 将finished属性重新设置为false
-            dchep.setFinished(false);
+            String transferToPath = dchep.getInputDataPath_i() + originalFilename;
 
-            // 很重要的一句话，但是不知道在干啥
-            dataFile.transferTo(new File(inputDataPath));
-
-            // DCHEParam单例对象，插入通过上传的文件计算出来的输入参数
-            System.out.println("inputDataPath: " + inputDataPath);
-            CalParamsUtils.calParams(inputDataPath);
-            dchep.setNoSNPs(CalParamsUtils.getNumSnp());
-            dchep.setNoControls(CalParamsUtils.getNumControl());
-            dchep.setNoCases(CalParamsUtils.getNumCase());
-            dchep.setNoSamples(CalParamsUtils.getNumCase() + CalParamsUtils.getNumControl());
+            dataFile.transferTo(new File(transferToPath));
 
         }
+        inputFileCount++;
+        System.out.println("已经上传 " + inputFileCount + " 个文件啦！");
         return "我收到你的文件啦lalala！";
     }
 
 
     // 前端轮询相应方法
-    // todo: 因为是java了，虽然需要仍然需要轮询，但是要重写方法，一个boolean值的事情
     @PostMapping("/DCHEPollResultData")
     public Map<String, Object> DCHEFinished(@RequestParam Map<String, String> params) throws IOException {
 
         log.info("是否得到请求号：queryId={}", params);
 
+        // 判断对应文件夹是否为空
+        String queryId = params.get("queryId");
+        String finishedPath = "D:/SNPPlatfromData/" + queryId + "/haveFinished";
+        String goalPath = "D:/SNPPlatfromData/" + queryId + "/resultData";
+
+        // CommonUtils.haveDir(goalPath)判断算法是否完成
         String finished = "false";
-        if(dchep.isFinished() == true){
+
+        float percent;
+        // todo:process 100以及提高并行性
+        System.out.println("getFinishedCount: "+ dchep.getFinishedCount());
+        System.out.println("getFilesCount: " + dchep.getFilesCount());
+        percent = CommonUtils.decFormatPer(dchep.getFinishedCount(), dchep.getFilesCount());
+
+        if(dchep.getFinishedCount() == dchep.getFilesCount()){
             finished = "true";
+            ZipUtils.dirToZip(goalPath);
         }
+
         //返回参数以便测试是否上传成功
         Map<String, Object> map = new HashMap<>();
         map.put("params", params);
         map.put("finished", finished);
+        map.put("progress", percent);
         return map;
     }
 
@@ -121,7 +145,7 @@ public class DCHEController {
             throws Exception {
         // 一些固定的参数
         String resDataDownloadPath = "D:\\SNPPlatfromData\\";
-        String resName = "\\resultData\\resultData.txt";
+        String resName = "\\resultData.zip";
         String downloadQueryId = dchep.getQueryId(); // 请求号,早没想到，这不就简洁了
 
         // 测试用
