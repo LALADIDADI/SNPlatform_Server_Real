@@ -1,12 +1,10 @@
 package com.fan.boot.service;
 
-import com.fan.boot.modules.mtif.Exhaustion;
+import com.fan.boot.modules.dcheModule.mtif.Exhaustion;
 import com.fan.boot.param.DCHEParam;
 import com.fan.boot.utils.CalParamsUtils;
 import com.fan.boot.utils.ReadFileListUtils;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
