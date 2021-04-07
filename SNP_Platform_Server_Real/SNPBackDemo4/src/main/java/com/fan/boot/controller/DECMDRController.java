@@ -1,15 +1,12 @@
 package com.fan.boot.controller;
 
-
 import com.fan.boot.config.MyConst;
-import com.fan.boot.param.HiSeekerParam;
-import com.fan.boot.service.HiSeekerImpl;
-import com.fan.boot.utils.CheckUtils;
+import com.fan.boot.param.DECMDRParam;
+import com.fan.boot.service.DECMDRImpl;
 import com.fan.boot.utils.CommonUtils;
 import com.fan.boot.utils.FileDeleteUtils;
 import com.fan.boot.utils.ZipUtils;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -21,63 +18,55 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.web.bind.annotation.RestController;
-
-/**
- * 一个算法一个Controller，包含一个上传文件监听和参数监听
- */
 @Slf4j
 @CrossOrigin
 @RestController
-public class HiSeekerController {
-
-    // 得到单例HiSeekerParam对象
+public class DECMDRController {
+    // 得到单例DCHEParam对象
     @Autowired
-    HiSeekerParam   hsp;
+    DECMDRParam decmdrp;
 
-    // 不得已而用的全局变量
+    // 文件批量上传而使用的全局变量
     int inputFileCount = 0; // 一次性上传文件的数量
-    float temFileCount = 0; // 暂存的文件数量，只在计算百分比时被调用一次,因为是计算百分比，除法运算，使用float
 
-
-    // HiSeeker参数上传方法
-    @PostMapping("/HiSeekerParamsUpload")
+    // DECMDR参数上传方法
+    @PostMapping("/DECMDRParamsUpload")
     public Map<String, Object> getParams(@RequestParam Map<String, String> params) throws IOException {
+
         // 将参数保存到算法参数对象中
-//        HiSeekerParam HSParams = new HiSeekerParam(params);
-        hsp.setAllParams(params);
+        decmdrp.setBasicParams(params);
+
+        // 这里并没有处理完成所有参数，因为是批处理，所以计算SNP之类延迟到算法真正调用时
+
 
         // 调出相应的Service，传递参数，运行算法
-        // HiSeekerImpl.runHiSeekerExe(hsp);
         // 因为需要执行的时间超过5秒，所以出现了uncaught错误
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 System.out.println("为运行算法开启一个新线程");
-                try {
-                    HiSeekerImpl.batchRun(hsp);
-                } catch (IOException | InterruptedException e) {
-                    e.printStackTrace();
-                }
+                DECMDRImpl.batchRun(decmdrp);
             }
         });
         thread.start();
 
+        System.out.println("我跳过了算法运行，直接执行");
         //返回参数以便测试是否上传成功
         log.info("上传的参数：params={}", params);
         Map<String, Object> map = new HashMap<>();
         map.put("params", params);
-        map.put("queryId", hsp.getQueryId());
+        map.put("queryId", decmdrp.getQueryId());
 
-        // 重置inputFileCount
-        temFileCount = inputFileCount;
+        // 重置inputFileCount,finishedFileCount
+        decmdrp.setFinishedCount(0);
+        decmdrp.setFilesCount(inputFileCount);
         inputFileCount = 0;
 
         return map;
     }
 
-    // HiSeeker文件上传方法
-    @PostMapping("/HiSeekerInputDataUpload")
+    // DECMDR文件上传方法
+    @PostMapping("/DECMDRInputDataUpload")
     public String getFile(@RequestPart("txtFile") MultipartFile dataFile) throws IOException {
 
         log.info("上传的信息：InputData={}", dataFile);
@@ -85,7 +74,7 @@ public class HiSeekerController {
 
         // 删除上一个请求的文件夹,如果是第一次，也没问题
         if(inputFileCount == 0){
-            String deletePath = MyConst.TEM_DATA_PATH + hsp.getQueryId();
+            String deletePath = MyConst.TEM_DATA_PATH + decmdrp.getQueryId();
             FileDeleteUtils.delete(deletePath);
         }
 
@@ -94,18 +83,18 @@ public class HiSeekerController {
             String originalFilename = dataFile.getOriginalFilename();
             System.out.println("originalFilename: "+originalFilename);
 
-            // 这里开始，HiSeekerparam单例对象介入
             if(inputFileCount == 0){
-                hsp.setQueryId(CommonUtils.createQueryId());
-                hsp.setInputDataName(originalFilename);
-                hsp.setInputDataPath(CommonUtils.getInputPath(hsp.getQueryId(), originalFilename));// 得到完整路径,批处理用不到
+                decmdrp.setQueryId(CommonUtils.createQueryId());
+                decmdrp.setInputDataName(originalFilename);
+                decmdrp.setInputDataPath(CommonUtils.getInputPath(decmdrp.getQueryId(), originalFilename));// 得到完整路径，批处理用不到
                 // 创建文件夹
-                CommonUtils.createDir(hsp.getQueryId());
+                CommonUtils.createDir(decmdrp.getQueryId());
                 // 不就是再新建一个属性嘛，新建不带文件名属性
-                hsp.setInputDataPath_i(CommonUtils.getInputPath_i(hsp.getQueryId())); // 批处理需要用的不完整路径
+                decmdrp.setInputDataPath_i(CommonUtils.getInputPath_i(decmdrp.getQueryId())); // 批处理需要用到的路径
+                decmdrp.setResDataPath_i(CommonUtils.getResultPath_i(decmdrp.getQueryId())); // 批处理需要用到的返回文件不完整路径
             }
 
-            String transferToPath = hsp.getInputDataPath_i() + originalFilename;
+            String transferToPath = decmdrp.getInputDataPath_i() + originalFilename;
 
             dataFile.transferTo(new File(transferToPath));
 
@@ -115,11 +104,10 @@ public class HiSeekerController {
         return "我收到你的文件啦lalala！";
     }
 
-    // HiSeeker结果文件下载方法,不急，先等等，还要先打包和请求号返回，以及轮询
 
     // 前端轮询相应方法
-    @PostMapping("/HiSeekerPollResultData")
-    public Map<String, Object> HiSeekerFinished(@RequestParam Map<String, String> params) throws IOException {
+    @PostMapping("/DECMDRPollResultData")
+    public Map<String, Object> DCHEFinished(@RequestParam Map<String, String> params) throws IOException {
 
         log.info("是否得到请求号：queryId={}", params);
 
@@ -130,14 +118,14 @@ public class HiSeekerController {
 
         // CommonUtils.haveDir(goalPath)判断算法是否完成
         String finished = "false";
-        float fileCount = 0;
-        float percent = 0;
-        if(CheckUtils.isDir(finishedPath)){
-            fileCount = CheckUtils.getDirCount(finishedPath);
-            percent = CommonUtils.decFormatPer(fileCount, temFileCount);
-        }
 
-        if(fileCount == temFileCount){
+        float percent;
+        // todo:process 100以及提高并行性
+        System.out.println("getFinishedCount: "+ decmdrp.getFinishedCount());
+        System.out.println("getFilesCount: " + decmdrp.getFilesCount());
+        percent = CommonUtils.decFormatPer(decmdrp.getFinishedCount(), decmdrp.getFilesCount());
+
+        if(decmdrp.getFinishedCount() == decmdrp.getFilesCount()){
             finished = "true";
             ZipUtils.dirToZip(goalPath);
         }
@@ -153,13 +141,16 @@ public class HiSeekerController {
 
     // 单纯的文件下载方法，输入：文件地址 返回结果
     // 可能要传入的参数
-    @GetMapping(value = "/HiSeekerResultDataDownload", consumes = MediaType.ALL_VALUE)
+    @GetMapping(value = "/DECMDRResultDataDownload", consumes = MediaType.ALL_VALUE)
     void downloadFile(final HttpServletResponse response)
             throws Exception {
         // 一些固定的参数
         String resDataDownloadPath = "D:\\SNPPlatfromData\\";
         String resName = "\\resultData.zip";
-        String downloadQueryId = hsp.getQueryId(); // 请求号,早没想到，这不就简洁了
+        String downloadQueryId = decmdrp.getQueryId(); // 请求号,早没想到，这不就简洁了
+
+        // 测试用
+        String testdownloadQueryId = "20210318232201";
 
         // 获取文件
         File file = new File(resDataDownloadPath + downloadQueryId + resName);
@@ -210,5 +201,4 @@ public class HiSeekerController {
             }
         }
     }
-
 }

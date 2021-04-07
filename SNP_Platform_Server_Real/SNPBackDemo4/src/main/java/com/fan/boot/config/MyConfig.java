@@ -1,9 +1,7 @@
 package com.fan.boot.config;
 
 
-import com.fan.boot.param.ClusterMIParam;
-import com.fan.boot.param.DCHEParam;
-import com.fan.boot.param.HiSeekerParam;
+import com.fan.boot.param.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -41,6 +39,18 @@ public class MyConfig {
     @Bean
     public DCHEParam DCHEParam01() {
         return new DCHEParam();
+    }
+
+    // DECMDR算法
+    @Bean
+    public DECMDRParam DECMDRParam01() {
+        return new DECMDRParam();
+    }
+
+    // MOCOED算法
+    @Bean
+    public MACOEDParam MACOEDParam01() {
+        return new MACOEDParam();
     }
 
 }

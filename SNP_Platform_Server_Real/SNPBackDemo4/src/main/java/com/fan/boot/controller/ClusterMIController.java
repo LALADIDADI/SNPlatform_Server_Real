@@ -1,5 +1,7 @@
 package com.fan.boot.controller;
 
+import com.fan.boot.config.MyConfig;
+import com.fan.boot.config.MyConst;
 import com.fan.boot.param.ClusterMIParam;
 import com.fan.boot.service.ClusterMIImpl;
 import com.fan.boot.service.HiSeekerImpl;
@@ -87,7 +89,7 @@ public class ClusterMIController {
 
         // 删除上一个请求的文件夹,如果是第一次，也没问题
         if(inputFileCount == 0){
-            String deletePath = "D:/SNPPlatfromData/" + cmip.getQueryId();
+            String deletePath = MyConst.TEM_DATA_PATH + cmip.getQueryId();
             FileDeleteUtils.delete(deletePath);
         }
 
@@ -96,7 +98,6 @@ public class ClusterMIController {
             String originalFilename = dataFile.getOriginalFilename();
             System.out.println("originalFilename: "+originalFilename);
 
-            // 这里开始，HiSeekerparam单例对象介入
             if(inputFileCount == 0){
                 cmip.setQueryId(CommonUtils.createQueryId());
                 cmip.setInputDataName(originalFilename);
@@ -127,8 +128,8 @@ public class ClusterMIController {
 
         // 判断对应文件夹是否为空
         String queryId = params.get("queryId");
-        String finishedPath = "D:/SNPPlatfromData/" + queryId + "/haveFinished";
-        String goalPath = "D:/SNPPlatfromData/" + queryId + "/resultData";
+        String finishedPath = MyConst.TEM_DATA_PATH + queryId + "/haveFinished";
+        String goalPath = MyConst.TEM_DATA_PATH + queryId + "/resultData";
 
         // CommonUtils.haveDir(goalPath)判断算法是否完成
         String finished = "false";
