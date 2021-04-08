@@ -53,4 +53,10 @@ public class MyConfig {
         return new MACOEDParam();
     }
 
+    // DualWMDRParam
+    @Bean
+    public DualWMDRParam DualWMDRParam01() {
+        return new DualWMDRParam();
+    }
+
 }
