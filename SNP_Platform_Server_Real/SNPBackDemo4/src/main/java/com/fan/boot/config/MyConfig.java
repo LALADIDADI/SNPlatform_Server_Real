@@ -53,10 +53,16 @@ public class MyConfig {
         return new MACOEDParam();
     }
 
-    // DualWMDRParam
+    // DualWMDR算法
     @Bean
     public DualWMDRParam DualWMDRParam01() {
         return new DualWMDRParam();
+    }
+
+    // MOMDR算法
+    @Bean
+    public MOMDRParam MOMDRParam01() {
+        return new MOMDRParam();
     }
 
 }
