@@ -27,7 +27,8 @@ public class ClusterMIImpl {
         // 获取exe文件在程序中的位置
         File directory = new File("");// 参数要为空
         String AbsolutePath = directory.getCanonicalPath();
-        String exePath = "\\src\\main\\resources\\static\\ClusterMIExe\\ClusterMIRun.exe";
+        String exePath = "\\model\\ClusterMIExe\\ClusterMIRun.exe";
+        String exePath2 = "\\src\\main\\resources\\static\\ClusterMIExe\\ClusterMIRun.exe";
         AbsolutePath = AbsolutePath + exePath;
         System.out.println(AbsolutePath);
 

@@ -15,8 +15,10 @@ public class DualWMDRImpl {
         // 定位exe所在位置
         File directory = new File("");// 参数要为空
         String AbsolutePath = directory.getCanonicalPath();
-        String exePath = "\\src\\main\\resources\\static\\DualWMDRExe\\DualWMDR.exe";
-        String exePath_3order = "\\src\\main\\resources\\static\\DualWMDRExe\\DualWMDR_3order.exe";
+        String exePath = "\\model\\DualWMDRExe\\DualWMDR.exe";
+        String exePath_3order = "\\model\\DualWMDRExe\\DualWMDR_3order.exe";
+        String exePath2 = "\\src\\main\\resources\\static\\DualWMDRExe\\DualWMDR.exe";
+        String exePath_3order_2 = "\\src\\main\\resources\\static\\DualWMDRExe\\DualWMDR_3order.exe";
         int order = dualParam.getOrder();
         if(order == 3){
             AbsolutePath = AbsolutePath + exePath_3order;

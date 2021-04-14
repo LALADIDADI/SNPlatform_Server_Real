@@ -65,4 +65,10 @@ public class MyConfig {
         return new MOMDRParam();
     }
 
+    // EpiMC算法
+    @Bean
+    public EpiMCParam EpiMCParam01() {
+        return new EpiMCParam();
+    }
+
 }
