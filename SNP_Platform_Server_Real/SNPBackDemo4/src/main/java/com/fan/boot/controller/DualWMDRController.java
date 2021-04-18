@@ -207,4 +207,52 @@ public class DualWMDRController {
             }
         }
     }
+
+    /***
+     * 任务控制界面附加的方法
+     * 包括一个只执行程序的方法和一个只上传参数的方法
+     * DualWMDR使用
+     */
+
+    @GetMapping("/DualWMDRJustRun")
+    public Map<String, Object> DualWMDRJustRun() {
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("为运行算法开启一个新线程");
+                try {
+                    DualWMDRImpl.batchRun(dualwmdrp);
+                } catch (IOException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
+
+        //返回参数以便测试是否上传成功
+        Map<String, Object> map = new HashMap<>();
+        map.put("method", "DualWMDR");
+        map.put("queryId", dualwmdrp.getQueryId());
+
+        // 重置inputFileCount
+        temFileCount = inputFileCount;
+        inputFileCount = 0;
+
+        return map;
+    }
+
+    @PostMapping("/DualWMDRJustSetParams")
+    public Map<String, Object> DualWMDRJustSetParams(@RequestParam Map<String, String> params) {
+
+        dualwmdrp.setBasicParams(params);
+
+        //返回参数以便测试是否上传成功
+        log.info("上传的参数：params={}", params);
+        Map<String, Object> map = new HashMap<>();
+        map.put("params", params);
+        map.put("queryId", dualwmdrp.getQueryId());
+
+        return map;
+    }
 }

@@ -29,7 +29,7 @@ public class HiSeekerImpl {
         String AbsolutePath = directory.getCanonicalPath();
         String exePath = "\\model\\HiSeekerExe\\HiSeekerRun.exe";
         String exePath2 = "\\src\\main\\resources\\static\\HiSeekerExe\\HiSeekerRun.exe";
-        AbsolutePath = AbsolutePath + exePath;
+        AbsolutePath = AbsolutePath + exePath2;
         System.out.println(AbsolutePath);
 
         String threshold = HiParams.getThreshold();

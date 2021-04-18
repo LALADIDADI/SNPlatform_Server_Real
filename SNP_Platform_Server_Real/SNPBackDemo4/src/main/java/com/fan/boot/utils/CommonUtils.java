@@ -8,6 +8,19 @@ import java.util.Date;
 public class CommonUtils {
 
     /**
+     * 生成当前时间的方法，精确到分钟，用于前端控制界面显示
+     *
+     * @return curTime
+     */
+
+    public static String getTime() {
+        SimpleDateFormat df = new SimpleDateFormat("MM-dd HH:mm");//设置日期格式
+        String currentDate = df.format(new Date());
+        System.out.println(currentDate);// new Date()为获取当前系统时间
+        return currentDate;
+    }
+
+    /**
      * 按照当前时间生成请求号的方法
      *
      * @return queryId, 请求号

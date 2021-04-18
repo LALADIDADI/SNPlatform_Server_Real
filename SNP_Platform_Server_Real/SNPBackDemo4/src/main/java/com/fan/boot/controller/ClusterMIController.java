@@ -4,7 +4,6 @@ import com.fan.boot.config.MyConfig;
 import com.fan.boot.config.MyConst;
 import com.fan.boot.param.ClusterMIParam;
 import com.fan.boot.service.ClusterMIImpl;
-import com.fan.boot.service.HiSeekerImpl;
 import com.fan.boot.utils.CheckUtils;
 import com.fan.boot.utils.CommonUtils;
 import com.fan.boot.utils.FileDeleteUtils;
@@ -46,13 +45,10 @@ public class ClusterMIController {
 
     // ClusterMI参数上传方法
     @PostMapping("/ClusterMIParamsUpload")
-    public Map<String, Object> getParams(@RequestParam Map<String, String> params) throws IOException {
+    public Map<String, Object> getParams(@RequestParam Map<String, String> params) {
 
         // 将参数保存到算法参数对象中
         cmip.setAllParams(params);
-
-        // 调出相应的Service，传递参数，运行算法
-        // ClusterMIImpl.runClusterMIExe(cmip);
 
         Thread thread = new Thread(new Runnable() {
             @Override
@@ -213,4 +209,54 @@ public class ClusterMIController {
             }
         }
     }
+
+    /***
+     * 任务控制界面附加的方法
+     * 包括一个只执行程序的方法和一个只上传参数的方法
+     * ClusterMI使用
+     */
+
+    @GetMapping("/ClusterMIJustRun")
+    public Map<String, Object> clusterMIJustRun() {
+
+        // 调出相应的Service，传递参数，运行算法
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("为运行算法开启一个新线程");
+                try {
+                    ClusterMIImpl.batchRun(cmip);
+                } catch (IOException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
+
+        //返回参数以便测试是否上传成功
+        Map<String, Object> map = new HashMap<>();
+        map.put("method", "ClusterMI");
+        map.put("queryId", cmip.getQueryId());
+
+        // 重置inputFileCount
+        temFileCount = inputFileCount;
+        inputFileCount = 0;
+
+        return map;
+    }
+
+    @PostMapping("/ClusterMIJustSetParams")
+    public Map<String, Object> clusterMIJustSetParams(@RequestParam Map<String, String> params) {
+
+        cmip.setAllParams(params);
+
+        //返回参数以便测试是否上传成功
+        log.info("上传的参数：params={}", params);
+        Map<String, Object> map = new HashMap<>();
+        map.put("params", params);
+        map.put("queryId", cmip.getQueryId());
+
+        return map;
+    }
+
 }

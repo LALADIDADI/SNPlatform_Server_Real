@@ -21,9 +21,9 @@ public class DualWMDRImpl {
         String exePath_3order_2 = "\\src\\main\\resources\\static\\DualWMDRExe\\DualWMDR_3order.exe";
         int order = dualParam.getOrder();
         if(order == 3){
-            AbsolutePath = AbsolutePath + exePath_3order;
+            AbsolutePath = AbsolutePath + exePath_3order_2;
         }else {
-            AbsolutePath = AbsolutePath + exePath;
+            AbsolutePath = AbsolutePath + exePath2;
         }
         System.out.println("AbsolutePath: " + AbsolutePath);
 

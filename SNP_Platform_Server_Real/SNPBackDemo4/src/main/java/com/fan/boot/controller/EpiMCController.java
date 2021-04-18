@@ -200,4 +200,54 @@ public class EpiMCController {
             }
         }
     }
+
+    /***
+     * 任务控制界面附加的方法
+     * 包括一个只执行程序的方法和一个只上传参数的方法
+     * EpiMC使用
+     */
+
+    @GetMapping("/EpiMCJustRun")
+    public Map<String, Object> EpiMCJustRun() {
+
+        // 调出相应的Service，传递参数，运行算法
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("为运行算法开启一个新线程");
+                try {
+                    EpiMCImpl.batchRun(epimcp);
+                } catch (IOException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
+
+        //返回参数以便测试是否上传成功
+        Map<String, Object> map = new HashMap<>();
+        map.put("method", "EpiMC");
+        map.put("queryId", epimcp.getQueryId());
+
+        // 重置inputFileCount
+        temFileCount = inputFileCount;
+        inputFileCount = 0;
+
+        return map;
+    }
+
+    @PostMapping("/EpiMCJustSetParams")
+    public Map<String, Object> EpiMCJustSetParams(@RequestParam Map<String, String> params) {
+
+        epimcp.setBasicParams(params);
+
+        //返回参数以便测试是否上传成功
+        log.info("上传的参数：params={}", params);
+        Map<String, Object> map = new HashMap<>();
+        map.put("params", params);
+        map.put("queryId", epimcp.getQueryId());
+
+        return map;
+    }
+
 }

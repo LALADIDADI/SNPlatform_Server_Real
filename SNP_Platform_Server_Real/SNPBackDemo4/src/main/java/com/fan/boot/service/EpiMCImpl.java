@@ -16,7 +16,7 @@ public class EpiMCImpl {
         String AbsolutePath = directory.getCanonicalPath();
         String exePath = "\\model\\MACOEDExe\\MACOED.exe"; // 打包后使用
         String exePath2 = "\\src\\main\\resources\\static\\EpiMCExe\\EpiMCEntrance.exe";
-        AbsolutePath = AbsolutePath + exePath;
+        AbsolutePath = AbsolutePath + exePath2;
         System.out.println("AbsolutePath: " + AbsolutePath);
 
         // 基本属性

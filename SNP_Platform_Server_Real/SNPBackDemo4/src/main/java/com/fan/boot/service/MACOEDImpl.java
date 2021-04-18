@@ -15,7 +15,7 @@ public class MACOEDImpl {
         String AbsolutePath = directory.getCanonicalPath();
         String exePath = "\\model\\MACOEDExe\\MACOED.exe";
         String exePath2 = "\\src\\main\\resources\\static\\MACOEDExe\\MACOED.exe";
-        AbsolutePath = AbsolutePath + exePath;
+        AbsolutePath = AbsolutePath + exePath2;
         System.out.println("AbsolutePath: " + AbsolutePath);
 
         // 基本属性

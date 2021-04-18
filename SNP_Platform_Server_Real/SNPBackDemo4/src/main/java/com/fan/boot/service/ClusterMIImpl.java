@@ -29,7 +29,7 @@ public class ClusterMIImpl {
         String AbsolutePath = directory.getCanonicalPath();
         String exePath = "\\model\\ClusterMIExe\\ClusterMIRun.exe";
         String exePath2 = "\\src\\main\\resources\\static\\ClusterMIExe\\ClusterMIRun.exe";
-        AbsolutePath = AbsolutePath + exePath;
+        AbsolutePath = AbsolutePath + exePath2;
         System.out.println(AbsolutePath);
 
         String typeOfSearch = CmiParams.getTypeOfSearch();

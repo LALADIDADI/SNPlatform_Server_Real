@@ -22,7 +22,7 @@ import java.util.Map;
 @CrossOrigin
 @RestController
 public class DECMDRController {
-    // 得到单例DCHEParam对象
+    // 得到单例DECMDRParam对象
     @Autowired
     DECMDRParam decmdrp;
 
@@ -36,11 +36,6 @@ public class DECMDRController {
         // 将参数保存到算法参数对象中
         decmdrp.setBasicParams(params);
 
-        // 这里并没有处理完成所有参数，因为是批处理，所以计算SNP之类延迟到算法真正调用时
-
-
-        // 调出相应的Service，传递参数，运行算法
-        // 因为需要执行的时间超过5秒，所以出现了uncaught错误
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -107,7 +102,7 @@ public class DECMDRController {
 
     // 前端轮询相应方法
     @PostMapping("/DECMDRPollResultData")
-    public Map<String, Object> DCHEFinished(@RequestParam Map<String, String> params) throws IOException {
+    public Map<String, Object> DECMDRFinished(@RequestParam Map<String, String> params) throws IOException {
 
         log.info("是否得到请求号：queryId={}", params);
 
@@ -200,5 +195,50 @@ public class DECMDRController {
                 }
             }
         }
+    }
+
+    /***
+     * 任务控制界面附加的方法
+     * 包括一个只执行程序的方法和一个只上传参数的方法
+     * DECMDR使用
+     */
+
+    @GetMapping("/DECMDRJustRun")
+    public Map<String, Object> decmdrJustRun() {
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("为运行算法开启一个新线程");
+                DECMDRImpl.batchRun(decmdrp);
+            }
+        });
+        thread.start();
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("method", "DECMDR");
+        map.put("queryId", decmdrp.getQueryId());
+
+        // 重置inputFileCount,finishedFileCount
+        decmdrp.setFinishedCount(0);
+        decmdrp.setFilesCount(inputFileCount);
+        inputFileCount = 0;
+
+        return map;
+    }
+
+    @PostMapping("/DECMDRJustSetParams")
+    public Map<String, Object> decmdrJustSetParams(@RequestParam Map<String, String> params) {
+
+        // 将参数保存到算法参数对象中
+        decmdrp.setBasicParams(params);
+
+        //返回参数以便测试是否上传成功
+        log.info("上传的参数：params={}", params);
+        Map<String, Object> map = new HashMap<>();
+        map.put("params", params);
+        map.put("queryId", decmdrp.getQueryId());
+
+        return map;
     }
 }

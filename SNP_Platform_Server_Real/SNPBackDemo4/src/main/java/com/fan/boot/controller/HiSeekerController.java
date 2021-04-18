@@ -42,7 +42,7 @@ public class HiSeekerController {
 
     // HiSeeker参数上传方法
     @PostMapping("/HiSeekerParamsUpload")
-    public Map<String, Object> getParams(@RequestParam Map<String, String> params) throws IOException {
+    public Map<String, Object> getParams(@RequestParam Map<String, String> params) {
         // 将参数保存到算法参数对象中
 //        HiSeekerParam HSParams = new HiSeekerParam(params);
         hsp.setAllParams(params);
@@ -210,5 +210,55 @@ public class HiSeekerController {
             }
         }
     }
+
+    /***
+     * 任务控制界面附加的方法
+     * 包括一个只执行程序的方法和一个只上传参数的方法
+     * HiSeeker使用
+     */
+
+    @GetMapping("/HiSeekerJustRun")
+    public Map<String, Object> hiSeekerJustRun() {
+
+        // 调出相应的Service，传递参数，运行算法
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("为运行算法开启一个新线程");
+                try {
+                    HiSeekerImpl.batchRun(hsp);
+                } catch (IOException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
+
+        //返回参数以便测试是否上传成功
+        Map<String, Object> map = new HashMap<>();
+        map.put("method", "HiSeeker");
+        map.put("queryId", hsp.getQueryId());
+
+        // 重置inputFileCount
+        temFileCount = inputFileCount;
+        inputFileCount = 0;
+
+        return map;
+    }
+
+    @PostMapping("/HiSeekerJustSetParams")
+    public Map<String, Object> hiSeekerJustSetParams(@RequestParam Map<String, String> params) {
+
+        hsp.setAllParams(params);
+
+        //返回参数以便测试是否上传成功
+        log.info("上传的参数：params={}", params);
+        Map<String, Object> map = new HashMap<>();
+        map.put("params", params);
+        map.put("queryId", hsp.getQueryId());
+
+        return map;
+    }
+
 
 }

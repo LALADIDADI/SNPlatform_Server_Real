@@ -2,6 +2,7 @@ package com.fan.boot.controller;
 
 import com.fan.boot.config.MyConst;
 import com.fan.boot.param.DCHEParam;
+import com.fan.boot.service.ClusterMIImpl;
 import com.fan.boot.service.DCHEImpl;
 import com.fan.boot.utils.*;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +50,6 @@ public class DCHEController {
         });
         thread.start();
 
-        System.out.println("我跳过了算法运行，直接执行");
         //返回参数以便测试是否上传成功
         log.info("上传的参数：params={}", params);
         Map<String, Object> map = new HashMap<>();
@@ -199,5 +199,50 @@ public class DCHEController {
                 }
             }
         }
+    }
+
+    /***
+     * 任务控制界面附加的方法
+     * 包括一个只执行程序的方法和一个只上传参数的方法
+     * DCHE使用
+     */
+
+    @GetMapping("/DCHEJustRun")
+    public Map<String, Object> dcheJustRun() {
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("为运行算法开启一个新线程");
+                DCHEImpl.batchRun(dchep);
+            }
+        });
+        thread.start();
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("method", "DCHE");
+        map.put("queryId", dchep.getQueryId());
+
+        // 重置inputFileCount,finishedFileCount
+        dchep.setFinishedCount(0);
+        dchep.setFilesCount(inputFileCount);
+        inputFileCount = 0;
+
+        return map;
+    }
+
+    @PostMapping("/DCHEJustSetParams")
+    public Map<String, Object> dcheJustSetParams(@RequestParam Map<String, String> params) {
+
+        // 将参数保存到算法参数对象中
+        dchep.setRemainParams(params);
+
+        //返回参数以便测试是否上传成功
+        log.info("上传的参数：params={}", params);
+        Map<String, Object> map = new HashMap<>();
+        map.put("params", params);
+        map.put("queryId", dchep.getQueryId());
+
+        return map;
     }
 }

@@ -207,4 +207,52 @@ public class MACOEDController {
             }
         }
     }
+
+    /***
+     * 任务控制界面附加的方法
+     * 包括一个只执行程序的方法和一个只上传参数的方法
+     * MACOED使用
+     */
+
+    @GetMapping("/MACOEDJustRun")
+    public Map<String, Object> MACOEDJustRun() {
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("为运行算法开启一个新线程");
+                try {
+                    MACOEDImpl.batchRun(macoedp);
+                } catch (IOException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
+
+        //返回参数以便测试是否上传成功
+        Map<String, Object> map = new HashMap<>();
+        map.put("method", "MACOED");
+        map.put("queryId", macoedp.getQueryId());
+
+        // 重置inputFileCount
+        temFileCount = inputFileCount;
+        inputFileCount = 0;
+
+        return map;
+    }
+
+    @PostMapping("/MACOEDJustSetParams")
+    public Map<String, Object> MACOEDJustSetParams(@RequestParam Map<String, String> params) {
+
+        macoedp.setBasicParams(params);
+
+        //返回参数以便测试是否上传成功
+        log.info("上传的参数：params={}", params);
+        Map<String, Object> map = new HashMap<>();
+        map.put("params", params);
+        map.put("queryId", macoedp.getQueryId());
+
+        return map;
+    }
 }

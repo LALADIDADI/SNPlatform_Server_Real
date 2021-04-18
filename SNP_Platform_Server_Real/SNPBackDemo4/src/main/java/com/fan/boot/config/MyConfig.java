@@ -1,6 +1,7 @@
 package com.fan.boot.config;
 
 
+import com.fan.boot.addition.taskManagement.TaskManagementParam;
 import com.fan.boot.param.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +23,12 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration(proxyBeanMethods = true)
 public class MyConfig {
+
+    // 任务控制界面参数
+    @Bean
+    public TaskManagementParam TaskManagementParam01() {
+        return new TaskManagementParam();
+    }
 
     // HiSeeker算法
     @Bean
