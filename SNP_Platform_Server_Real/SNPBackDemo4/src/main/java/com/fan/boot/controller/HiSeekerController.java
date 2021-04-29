@@ -83,7 +83,7 @@ public class HiSeekerController {
         log.info("上传的信息：InputData={}", dataFile);
         System.out.println(dataFile.isEmpty());
 
-        // 删除上一个请求的文件夹,如果是第一次，也没问题
+        // 删除上一个请求的文件夹
         if(inputFileCount == 0){
             String deletePath = MyConst.TEM_DATA_PATH + hsp.getQueryId();
             FileDeleteUtils.delete(deletePath);
@@ -101,12 +101,10 @@ public class HiSeekerController {
                 hsp.setInputDataPath(CommonUtils.getInputPath(hsp.getQueryId(), originalFilename));// 得到完整路径,批处理用不到
                 // 创建文件夹
                 CommonUtils.createDir(hsp.getQueryId());
-                // 不就是再新建一个属性嘛，新建不带文件名属性
                 hsp.setInputDataPath_i(CommonUtils.getInputPath_i(hsp.getQueryId())); // 批处理需要用的不完整路径
             }
 
             String transferToPath = hsp.getInputDataPath_i() + originalFilename;
-
             dataFile.transferTo(new File(transferToPath));
 
         }
