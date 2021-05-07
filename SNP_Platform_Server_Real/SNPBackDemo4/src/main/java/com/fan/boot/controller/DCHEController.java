@@ -201,6 +201,17 @@ public class DCHEController {
         }
     }
 
+    // 结果展示方法
+    @PostMapping("/DCHEResultShow")
+    public Map<String, String>[] dcheResultShow(@RequestParam Map<String, String> params) {
+        // 找到相应位置
+        String filePath = CalParamsUtils.resShowPath(dchep.getQueryId());
+        // 文件输出流
+        Map[] maps = ReadFileUtils.dcheReadTxtFile(filePath, 8);
+        // 返回
+        return maps;
+    }
+
     /***
      * 任务控制界面附加的方法
      * 包括一个只执行程序的方法和一个只上传参数的方法

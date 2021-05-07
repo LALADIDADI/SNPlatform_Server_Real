@@ -1,5 +1,7 @@
 package com.fan.boot.utils;
 
+import com.fan.boot.config.MyConst;
+
 import java.io.*;
 
 /**
@@ -13,6 +15,21 @@ public class CalParamsUtils {
     private static int numSnp;
     private static int numCase;
     private static int numControl;
+
+    /**
+     * 用于HiSeeker，给出resultData路径，依靠前缀返回high-order路径
+     *
+     * @param queryId
+     *
+     * @return String
+     */
+    public static String resShowPath(String queryId) {
+        String filePath = MyConst.TEM_DATA_PATH + queryId + "\\resultData\\";
+        File files = new File(filePath);
+        String[] names = files.list();    //获取F盘根目录所有文件和路径,并以字符串数组返回
+        // System.out.println(names[0]);
+        return filePath + names[0];
+    }
 
 
     /**

@@ -3,9 +3,7 @@ package com.fan.boot.controller;
 import com.fan.boot.config.MyConst;
 import com.fan.boot.param.DECMDRParam;
 import com.fan.boot.service.DECMDRImpl;
-import com.fan.boot.utils.CommonUtils;
-import com.fan.boot.utils.FileDeleteUtils;
-import com.fan.boot.utils.ZipUtils;
+import com.fan.boot.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -195,6 +193,17 @@ public class DECMDRController {
                 }
             }
         }
+    }
+
+    // 结果展示方法
+    @PostMapping("/DECMDRResultShow")
+    public Map<String,String>[] hiSeekerResultShow(@RequestParam Map<String, String> params) {
+        // 找到相应位置
+        String filePath = CalParamsUtils.resShowPath(decmdrp.getQueryId());
+        // 文件输出流
+        Map[] res = ReadFileUtils.decmdrReadTxtFile(filePath,15);
+        // 返回
+        return res;
     }
 
     /***

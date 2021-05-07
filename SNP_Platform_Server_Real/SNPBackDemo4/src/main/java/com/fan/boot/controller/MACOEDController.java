@@ -4,10 +4,7 @@ import com.fan.boot.config.MyConfig;
 import com.fan.boot.config.MyConst;
 import com.fan.boot.param.MACOEDParam;
 import com.fan.boot.service.MACOEDImpl;
-import com.fan.boot.utils.CheckUtils;
-import com.fan.boot.utils.CommonUtils;
-import com.fan.boot.utils.FileDeleteUtils;
-import com.fan.boot.utils.ZipUtils;
+import com.fan.boot.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -206,6 +203,17 @@ public class MACOEDController {
                 }
             }
         }
+    }
+
+    // 结果展示方法
+    @PostMapping("/MACOEDResultShow")
+    public Map<String,String>[] MACOEDResultShow(@RequestParam Map<String, String> params) {
+        // 找到相应位置
+        String filePath = CalParamsUtils.resShowPath(macoedp.getQueryId());
+        // 文件输出流
+        Map[] res = ReadFileUtils.macoedReadTxtFile(filePath,15);
+        // 返回
+        return res;
     }
 
     /***

@@ -1,5 +1,7 @@
 package com.fan.boot.utils;
 
+import com.fan.boot.config.MyConst;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -9,11 +11,7 @@ import java.text.DecimalFormat;
 
 public class CopyFileUtils {
     public static void main(String[] args) {
-        //copyFile();
-        DecimalFormat df=new DecimalFormat("0.00");
-        double i = 0;
-        i = 1/2;
-        System.out.println(df.format((double)1/2));
+
     }
 
     public static void copyFile() {

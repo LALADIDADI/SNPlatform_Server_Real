@@ -4,10 +4,7 @@ package com.fan.boot.controller;
 import com.fan.boot.config.MyConst;
 import com.fan.boot.param.HiSeekerParam;
 import com.fan.boot.service.HiSeekerImpl;
-import com.fan.boot.utils.CheckUtils;
-import com.fan.boot.utils.CommonUtils;
-import com.fan.boot.utils.FileDeleteUtils;
-import com.fan.boot.utils.ZipUtils;
+import com.fan.boot.utils.*;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,8 +110,7 @@ public class HiSeekerController {
         return "我收到你的文件啦lalala！";
     }
 
-    // HiSeeker结果文件下载方法,不急，先等等，还要先打包和请求号返回，以及轮询
-
+    // HiSeeker结果文件下载方法
     // 前端轮询相应方法
     @PostMapping("/HiSeekerPollResultData")
     public Map<String, Object> HiSeekerFinished(@RequestParam Map<String, String> params) throws IOException {
@@ -207,6 +203,17 @@ public class HiSeekerController {
                 }
             }
         }
+    }
+
+    // 结果展示方法
+    @PostMapping("/HiSeekerResultShow")
+    public Map<String, String>[] hiSeekerResultShow(@RequestParam Map<String, String> params) {
+        // 找到相应位置
+        String filePath = CalParamsUtils.resShowPath(hsp.getQueryId());
+        // 文件输出流
+        Map[] maps = ReadFileUtils.hiSeekerReadTxtFile(filePath, 10);
+        // 返回
+        return maps;
     }
 
     /***

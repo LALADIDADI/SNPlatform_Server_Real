@@ -4,10 +4,7 @@ import com.fan.boot.config.MyConfig;
 import com.fan.boot.config.MyConst;
 import com.fan.boot.param.ClusterMIParam;
 import com.fan.boot.service.ClusterMIImpl;
-import com.fan.boot.utils.CheckUtils;
-import com.fan.boot.utils.CommonUtils;
-import com.fan.boot.utils.FileDeleteUtils;
-import com.fan.boot.utils.ZipUtils;
+import com.fan.boot.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -208,6 +205,17 @@ public class ClusterMIController {
                 }
             }
         }
+    }
+
+    // 结果展示方法
+    @PostMapping("/ClusterMIResultShow")
+    public Map<String, String>[] clusterMIResultShow(@RequestParam Map<String, String> params) {
+        // 找到相应位置
+        String filePath = CalParamsUtils.resShowPath(cmip.getQueryId());
+        // 文件输出流
+        Map[] maps = ReadFileUtils.clusterMIReadTxtFile(filePath, 10);
+        // 返回
+        return maps;
     }
 
     /***
