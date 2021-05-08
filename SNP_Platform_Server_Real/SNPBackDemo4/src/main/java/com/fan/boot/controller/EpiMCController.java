@@ -4,10 +4,7 @@ import com.fan.boot.config.MyConfig;
 import com.fan.boot.config.MyConst;
 import com.fan.boot.param.EpiMCParam;
 import com.fan.boot.service.EpiMCImpl;
-import com.fan.boot.utils.CheckUtils;
-import com.fan.boot.utils.CommonUtils;
-import com.fan.boot.utils.FileDeleteUtils;
-import com.fan.boot.utils.ZipUtils;
+import com.fan.boot.utils.*;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -199,6 +196,17 @@ public class EpiMCController {
                 }
             }
         }
+    }
+
+    // 结果展示方法
+    @PostMapping("/EpiMCResultShow")
+    public Map<String, String>[] epiMCResultShow(@RequestParam Map<String, String> params) {
+        // 找到相应位置
+        String filePath = CalParamsUtils.resShowPath(epimcp.getQueryId());
+        // 文件输出流
+        Map[] maps = ReadFileUtils.epiMCReadTxtFile(filePath, 9);
+        // 返回
+        return maps;
     }
 
     /***

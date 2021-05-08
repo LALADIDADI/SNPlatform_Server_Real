@@ -4,10 +4,7 @@ import com.fan.boot.config.MyConfig;
 import com.fan.boot.config.MyConst;
 import com.fan.boot.param.DualWMDRParam;
 import com.fan.boot.service.DualWMDRImpl;
-import com.fan.boot.utils.CheckUtils;
-import com.fan.boot.utils.CommonUtils;
-import com.fan.boot.utils.FileDeleteUtils;
-import com.fan.boot.utils.ZipUtils;
+import com.fan.boot.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -206,6 +203,17 @@ public class DualWMDRController {
                 }
             }
         }
+    }
+
+    // 结果展示方法
+    @PostMapping("/DualWMDRResultShow")
+    public Map<String,String>[] DualWMDRResultShow(@RequestParam Map<String, String> params) {
+        // 找到相应位置
+        String filePath = CalParamsUtils.resShowPath(dualwmdrp.getQueryId());
+        // 文件输出流
+        Map[] res = ReadFileUtils.dualWMDRReadTxtFile(filePath,9);
+        // 返回
+        return res;
     }
 
     /***
