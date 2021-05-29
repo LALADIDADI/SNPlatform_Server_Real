@@ -26,6 +26,7 @@ public class DECMDRController {
 
     // 文件批量上传而使用的全局变量
     int inputFileCount = 0; // 一次性上传文件的数量
+    String finished = "false"; // 判断多个参数文件是否均已运算完成。
 
     // DECMDR参数上传方法
     @PostMapping("/DECMDRParamsUpload")
@@ -110,8 +111,6 @@ public class DECMDRController {
         String goalPath = MyConst.TEM_DATA_PATH + queryId + "/resultData";
 
         // CommonUtils.haveDir(goalPath)判断算法是否完成
-        String finished = "false";
-
         float percent;
         // todo:process 100以及提高并行性
         System.out.println("getFinishedCount: "+ decmdrp.getFinishedCount());
@@ -204,6 +203,26 @@ public class DECMDRController {
         Map[] res = ReadFileUtils.decmdrReadTxtFile(filePath,15);
         // 返回
         return res;
+    }
+
+    // 强制终止按钮
+    /**
+     * 该方法会删除相应数据文件，并重置参数界面。原理为在遍历函数中插入布尔变量，
+     * 并强制返回轮询结果为true
+     */
+
+    @GetMapping("/DECMDRForceStop")
+    public String decmdrForceStop(@RequestParam Map<String, String> params) throws FileNotFoundException {
+
+        // 强制终止所有进程
+        String queryId = decmdrp.getQueryId();
+        String goalPath = MyConst.TEM_DATA_PATH + queryId + "/resultData";
+        ZipUtils.dirToZip(goalPath);
+        // 返回轮询结果为true
+        finished = "true";
+
+        // 返回
+        return "强制暂停成功";
     }
 
     /***

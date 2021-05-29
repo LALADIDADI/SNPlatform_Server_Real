@@ -7,8 +7,10 @@ import com.fan.boot.utils.ReadFileListUtils;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class DCHEImpl {
+
 
     // 传入DCHEParam对象，执行算法
     public static void runDCHE(DCHEParam dcheParam, String fileName){
@@ -78,6 +80,7 @@ public class DCHEImpl {
         for(int i = 0; i < inputFiles.length; i++){
             runDCHE(dcheParam, inputFiles[i]);
             System.out.println("inputFiles["+ i +"]:"+inputFiles[i]);
+
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {

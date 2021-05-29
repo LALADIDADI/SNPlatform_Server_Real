@@ -4,6 +4,7 @@ import com.fan.boot.config.MyConst;
 import com.fan.boot.param.DCHEParam;
 import com.fan.boot.service.ClusterMIImpl;
 import com.fan.boot.service.DCHEImpl;
+import com.fan.boot.service.HiSeekerImpl;
 import com.fan.boot.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ public class DCHEController {
 
     // 文件批量上传而使用的全局变量
     int inputFileCount = 0; // 一次性上传文件的数量
+    String finished = "false"; // 判断多个参数文件是否均已运算完成。
 
     // DCHE参数上传方法
     @PostMapping("/DCHEParamsUpload")
@@ -70,6 +72,9 @@ public class DCHEController {
 
         log.info("上传的信息：InputData={}", dataFile);
         System.out.println(dataFile.isEmpty());
+
+        // 上传意味着finished为false
+        finished = "false";
 
         // 删除上一个请求的文件夹,如果是第一次，也没问题
         if(inputFileCount == 0){
@@ -116,10 +121,9 @@ public class DCHEController {
         String goalPath = MyConst.TEM_DATA_PATH + queryId + "/resultData";
 
         // CommonUtils.haveDir(goalPath)判断算法是否完成
-        String finished = "false";
 
         float percent;
-        // todo:process 100以及提高并行性
+
         System.out.println("getFinishedCount: "+ dchep.getFinishedCount());
         System.out.println("getFilesCount: " + dchep.getFilesCount());
         percent = CommonUtils.decFormatPer(dchep.getFinishedCount(), dchep.getFilesCount());
@@ -210,6 +214,28 @@ public class DCHEController {
         Map[] maps = ReadFileUtils.dcheReadTxtFile(filePath, 8);
         // 返回
         return maps;
+    }
+
+    // 强制终止按钮
+    /**
+     * 该方法会删除相应数据文件，并重置参数界面。原理为在遍历函数中插入布尔变量，
+     * 并强制返回轮询结果为true
+     */
+    @GetMapping("/DCHEForceStop")
+    public String dcheForceStop(@RequestParam Map<String, String> params) throws FileNotFoundException {
+
+        // 强制终止所有进程
+        // 这一部分因为是java内部代码，为了不破坏算法的整体性，采用伪终止
+        // 即停止轮询（如果接我代码的同学有更好的解决方式，请不吝修改
+        // 保存目前计算的结果，打包成压缩包
+        String queryId = dchep.getQueryId();
+        String goalPath = MyConst.TEM_DATA_PATH + queryId + "/resultData";
+        ZipUtils.dirToZip(goalPath);
+        // 返回轮询结果为true
+        finished = "true";
+
+        // 返回
+        return "强制暂停成功";
     }
 
     /***

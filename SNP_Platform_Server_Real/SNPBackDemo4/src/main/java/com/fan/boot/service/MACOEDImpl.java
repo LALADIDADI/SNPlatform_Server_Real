@@ -7,8 +7,21 @@ import com.fan.boot.utils.RunExeUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class MACOEDImpl {
+
+    // 控制进程销毁的容器全局变量
+    static ArrayList<Process> proList = new ArrayList<Process>();
+
+    // 销毁全部进程的方法
+    public static void destroyOb() {
+        for(int i = 0; i < proList.size(); i++) {
+            Process p = proList.get(i);
+            p.destroy();
+        }
+    }
+
     public static void runMACOED(MACOEDParam macoedParam, String fileName) throws IOException {
         // 定位exe所在位置
         File directory = new File("");// 参数要为空
@@ -40,7 +53,8 @@ public class MACOEDImpl {
         String haveFinished2 = MyConst.TEM_DATA_PATH + queryId + "\\haveFinished\\" + dataName;
         // 参数属性
         String cmd[] = {AbsolutePath, maxIter, numAnt, dimEpi, alpha, lambda, threshold, tau, rou, inputFilePath, resDataPath, haveFinished, haveFinished2};
-        RunExeUtils.openExe(cmd);
+        Process p = RunExeUtils.openExe(cmd);
+        proList.add(p);
         System.out.println(maxIter+" "+numAnt+" "+dimEpi+" "+alpha+" "+lambda+" "+threshold+" "+tau+" "+rou+" ");
         System.out.println("完整文件输入路径：" + inputFilePath);
         System.out.println("完整文件返回路径：" + resDataPath);

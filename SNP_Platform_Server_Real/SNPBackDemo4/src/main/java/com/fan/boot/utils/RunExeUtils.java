@@ -7,7 +7,7 @@ public class RunExeUtils {
      * 打开并运行exe
      * @param AbsolutePath
      */
-    public static void openExe(String[] AbsolutePath) {
+    public static Process openExe(String[] AbsolutePath) {
         Runtime rn = Runtime.getRuntime();
         Process p = null;
         try {
@@ -15,5 +15,6 @@ public class RunExeUtils {
         } catch (Exception e) {
             System.out.println("Error exec!");
         }
+        return p;
     }
 }

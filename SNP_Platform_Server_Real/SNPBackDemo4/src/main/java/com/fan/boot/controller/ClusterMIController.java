@@ -4,6 +4,7 @@ import com.fan.boot.config.MyConfig;
 import com.fan.boot.config.MyConst;
 import com.fan.boot.param.ClusterMIParam;
 import com.fan.boot.service.ClusterMIImpl;
+import com.fan.boot.service.HiSeekerImpl;
 import com.fan.boot.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -38,6 +39,7 @@ public class ClusterMIController {
     // 全局变量
     int inputFileCount = 0; // 一次性上传文件的数量
     float temFileCount = 0; // 暂存的文件数量，只在计算百分比时被调用一次
+    String finished = "false"; // 判断多个参数文件是否均已运算完成。
 
 
     // ClusterMI参数上传方法
@@ -77,8 +79,12 @@ public class ClusterMIController {
     // ClusterMI文件上传方法
     @PostMapping("/ClusterMIInputDataUpload")
     public String getFile(@RequestPart("txtFile") MultipartFile dataFile) throws IOException {
+
         log.info("上传的信息：InputData={}", dataFile);
         System.out.println(dataFile.isEmpty());
+
+        // 上传意味着finished为false
+        finished = "false";
 
         // 删除上一个请求的文件夹,如果是第一次，也没问题
         if(inputFileCount == 0){
@@ -125,7 +131,6 @@ public class ClusterMIController {
         String goalPath = MyConst.TEM_DATA_PATH + queryId + "/resultData";
 
         // CommonUtils.haveDir(goalPath)判断算法是否完成
-        String finished = "false";
         float fileCount = 0;
         float percent = 0;
         if(CheckUtils.isDir(finishedPath)){
@@ -216,6 +221,28 @@ public class ClusterMIController {
         Map[] maps = ReadFileUtils.clusterMIReadTxtFile(filePath, 10);
         // 返回
         return maps;
+    }
+
+    // 强制终止按钮
+    /**
+     * 该方法会删除相应数据文件，并重置参数界面。原理为在遍历函数中插入布尔变量，
+     * 并强制返回轮询结果为true
+     */
+
+    @GetMapping("/ClusterMIForceStop")
+    public String clusterMIForceStop(@RequestParam Map<String, String> params) throws FileNotFoundException {
+
+        // 强制终止所有进程
+        ClusterMIImpl.destroyOb();
+        // 保存目前计算的结果，打包成压缩包
+        String queryId = cmip.getQueryId();
+        String goalPath = MyConst.TEM_DATA_PATH + queryId + "/resultData";
+        ZipUtils.dirToZip(goalPath);
+        // 返回轮询结果为true
+        finished = "true";
+
+        // 返回
+        return "强制暂停成功";
     }
 
     /***

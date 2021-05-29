@@ -41,7 +41,7 @@ public class ReadFileUtils {
                 String lineTxt = null;
                 // 写把标题头读出
                 bufferedReader.readLine();
-                while ((lineTxt = bufferedReader.readLine()) != null && rowCount >= 0) {
+                while ((lineTxt = bufferedReader.readLine()) != null && rowCount > 0) {
                     System.out.println(lineTxt);
                     // 将结果保存在maps中
                     Map<String, String> map = new HashMap<>();
@@ -78,7 +78,7 @@ public class ReadFileUtils {
                 String lineTxt = null;
                 // 写把标题头读出
                 bufferedReader.readLine();
-                while ((lineTxt = bufferedReader.readLine()) != null && rowCount >= 0) {
+                while ((lineTxt = bufferedReader.readLine()) != null && rowCount > 0) {
                     System.out.println(lineTxt);
                     // 将结果保存在maps中
                     Map<String, String> map = new HashMap<>();
@@ -115,7 +115,7 @@ public class ReadFileUtils {
                 String lineTxt = null;
                 // 写把标题头读出
                 bufferedReader.readLine();
-                while ((lineTxt = bufferedReader.readLine()) != null && rowCount >= 0) {
+                while ((lineTxt = bufferedReader.readLine()) != null && rowCount > 0) {
                     System.out.println(lineTxt);
                     // 将结果保存在maps中
                     Map<String, String> map = new HashMap<>();
@@ -159,7 +159,7 @@ public class ReadFileUtils {
                 String lineTxt = null;
                 // 写把标题头读出
                 bufferedReader.readLine();
-                while ((lineTxt = bufferedReader.readLine()) != null && rowCount >= 0) {
+                while ((lineTxt = bufferedReader.readLine()) != null && rowCount > 0) {
                     System.out.println(lineTxt);
                     // 将结果保存在maps中
                     Map<String, String> map = new HashMap<>();
@@ -190,7 +190,7 @@ public class ReadFileUtils {
                 BufferedReader bufferedReader = new BufferedReader(read);
                 String lineTxt = null;
 
-                while ((lineTxt = bufferedReader.readLine()) != null && rowCount >= 0) {
+                while ((lineTxt = bufferedReader.readLine()) != null && rowCount > 0) {
                     System.out.println(lineTxt);
                     // 将结果保存在maps中
                     Map<String, String> map = new HashMap<>();
@@ -222,7 +222,7 @@ public class ReadFileUtils {
                 String lineTxt = null;
                 // 写把标题头读出
                 bufferedReader.readLine();
-                while ((lineTxt = bufferedReader.readLine()) != null && rowCount >= 0) {
+                while ((lineTxt = bufferedReader.readLine()) != null && rowCount > 0) {
                     System.out.println(lineTxt);
                     // 将结果保存在maps中
                     Map<String, String> map = new HashMap<>();
@@ -262,7 +262,7 @@ public class ReadFileUtils {
                         new FileInputStream(file), encoding);//考虑到编码格式
                 BufferedReader bufferedReader = new BufferedReader(read);
                 String lineTxt = null;
-                while ((lineTxt = bufferedReader.readLine()) != null && rowCount >= 0) {
+                while ((lineTxt = bufferedReader.readLine()) != null && rowCount > 0) {
                     System.out.println(lineTxt);
                     // 将结果保存在maps中
                     Map<String, String> map = new HashMap<>();
@@ -294,7 +294,7 @@ public class ReadFileUtils {
                 String lineTxt = null;
                 // 写把标题头读出
                 bufferedReader.readLine();
-                while ((lineTxt = bufferedReader.readLine()) != null && rowCount >= 0) {
+                while ((lineTxt = bufferedReader.readLine()) != null && rowCount > 0) {
                     System.out.println(lineTxt);
                     // 将结果保存在maps中
                     Map<String, String> map = new HashMap<>();

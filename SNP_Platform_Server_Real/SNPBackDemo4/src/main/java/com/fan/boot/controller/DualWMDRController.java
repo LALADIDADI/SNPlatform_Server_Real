@@ -4,6 +4,7 @@ import com.fan.boot.config.MyConfig;
 import com.fan.boot.config.MyConst;
 import com.fan.boot.param.DualWMDRParam;
 import com.fan.boot.service.DualWMDRImpl;
+import com.fan.boot.service.HiSeekerImpl;
 import com.fan.boot.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -38,7 +39,7 @@ public class DualWMDRController {
     // 全局变量
     int inputFileCount = 0; // 一次性上传文件的数量
     float temFileCount = 0; // 暂存的文件数量，只在计算百分比时被调用一次
-
+    String finished = "false"; // 判断多个参数文件是否均已运算完成。
 
     // DualWMDR参数上传方法
     @PostMapping("/DualWMDRParamsUpload")
@@ -123,7 +124,6 @@ public class DualWMDRController {
         String finishedPath = MyConst.TEM_DATA_PATH + queryId + "/haveFinished";
         String goalPath = MyConst.TEM_DATA_PATH + queryId + "/resultData";
 
-        String finished = "false";
         float fileCount = 0;
         float percent = 0;
         if(CheckUtils.isDir(finishedPath)){
@@ -214,6 +214,27 @@ public class DualWMDRController {
         Map[] res = ReadFileUtils.dualWMDRReadTxtFile(filePath,9);
         // 返回
         return res;
+    }
+
+    // 强制终止按钮
+    /**
+     * 该方法会删除相应数据文件，并重置参数界面。原理为在遍历函数中插入布尔变量，
+     * 并强制返回轮询结果为true
+     */
+    @GetMapping("/DualWMDRForceStop")
+    public String dualWMDRForceStop(@RequestParam Map<String, String> params) throws FileNotFoundException {
+
+        // 强制终止所有进程
+        DualWMDRImpl.destroyOb();
+        // 保存目前计算的结果，打包成压缩包
+        String queryId = dualwmdrp.getQueryId();
+        String goalPath = MyConst.TEM_DATA_PATH + queryId + "/resultData";
+        ZipUtils.dirToZip(goalPath);
+        // 返回轮询结果为true
+        finished = "true";
+
+        // 返回
+        return "强制暂停成功";
     }
 
     /***

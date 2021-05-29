@@ -5,9 +5,20 @@ import com.fan.boot.utils.ReadFileListUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class HiSeekerImpl {
 
+    // 控制进程销毁的容器全局变量
+    static ArrayList<Process> proList = new ArrayList<Process>();
+
+    // 销毁全部进程的方法
+    public static void destroyOb() {
+        for(int i = 0; i < proList.size(); i++) {
+            Process p = proList.get(i);
+            p.destroy();
+        }
+    }
 
     // 打开并运行exe的方法
     public static void openExe(String[] AbsolutePath) {
@@ -15,6 +26,7 @@ public class HiSeekerImpl {
         Process p = null;
         try {
             p = rn.exec(AbsolutePath);
+            proList.add(p);
         } catch (Exception e) {
             System.out.println("Error exec!");
         }

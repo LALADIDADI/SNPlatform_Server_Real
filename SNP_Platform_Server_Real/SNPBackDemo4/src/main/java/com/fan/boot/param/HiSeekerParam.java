@@ -27,6 +27,9 @@ public class HiSeekerParam {
     String inputDataPath;
     String inputDataPath_i; // inputFile不带文件名版本，即青春版
 
+    // 控制算法运行相关参数
+    boolean forceStop = false;
+
 
     public HiSeekerParam() {
     }
